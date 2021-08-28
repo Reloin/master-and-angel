@@ -1,3 +1,4 @@
 _pycache_
 tempCodeRunnerFile.py
-.json
+*.json
+*.pyc
