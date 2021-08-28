@@ -11,7 +11,7 @@ with open("pwd.json") as p:
     mail = credentials["email"]
     pswd = credentials["password"]
     
-def send_email(content="Hello there", subject="Good day", receiver=None):
+def send_email(content="Hello there", subject="Good day", receiver=None, text=True):
     if receiver == None:
         pass
     
@@ -22,7 +22,11 @@ def send_email(content="Hello there", subject="Good day", receiver=None):
     msg["Subject"] = subject
     
     #processing content
-    txt_part = MIMEText(content, "plain")
+    txt_part = None
+    if text:
+        txt_part = MIMEText(content, "plain")
+    else:
+        txt_part = MIMEText(content, "html")
     msg.attach(txt_part)
     msg_str = msg.as_string()
     

@@ -6,6 +6,7 @@ from send_email import send_email
 host = "imap.gmail.com"
 user = None
 pswd = None
+text = True
 
 with open("pwd.json") as p:
     credentials = json.load(p)
@@ -33,10 +34,18 @@ def check_mail():
                 body = part.get_payload(decode=True)
                 my_message = body.decode()
                 my_message = my_message.splitlines()
+            elif part.get_content_type() == "text/html":
+                html_body = part.get_payload(decode=True)
+                my_message = html_body.decode()
+                my_message = my_message.split("br")
+                text = False
         #determine if email is to angel or master
         type = my_message[0].lower()
         #restore message
-        my_message = '\n'.join(my_message)
+        if text:
+            my_message = '\n'.join(my_message)
+        else:
+            my_message = 'br'.join(my_message)
         
         #determine to send to master or angle
         if "angel" in type:
@@ -54,6 +63,6 @@ def check_mail():
         if receiver == None: pass
         
         #function to send email
-        send_email(my_message, email_message["subject"], receiver)
+        send_email(my_message, email_message["subject"], receiver, text)
 
 check_mail()
