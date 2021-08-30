@@ -6,7 +6,7 @@ from send_email import send_email
 host = "imap.gmail.com"
 user = None
 pswd = None
-text = True
+
 
 with open("pwd.json") as p:
     credentials = json.load(p)
@@ -22,30 +22,19 @@ def check_mail():
 
     #read all unseen email
     for num in search_data[0].split():
-        receiver = None
-        my_message = None
+        #read email and separate email body
         _, data = mail.fetch(num, "(RFC822)")
-        _, b = data[0]
-        email_message = email.message_from_bytes(b)
+        _, body = data[0]
+        email_message = email.message_from_bytes(body)
+        subject = email_message["subject"]
+        receiver = None
+        my_message = get_decoded_email_body(body)
+        my_message = my_message.decode().splitlines()
         
-        #message is in 
-        for part in email_message.walk():
-            if part.get_content_type() == "text/plain":
-                body = part.get_payload(decode=True)
-                my_message = body.decode()
-                my_message = my_message.splitlines()
-            elif part.get_content_type() == "text/html":
-                html_body = part.get_payload(decode=True)
-                my_message = html_body.decode()
-                my_message = my_message.split("br")
-                text = False
         #determine if email is to angel or master
         type = my_message[0].lower()
         #restore message
-        if text:
-            my_message = '\n'.join(my_message)
-        else:
-            my_message = 'br'.join(my_message)
+        my_message = '\n'.join(my_message)
         
         #determine to send to master or angle
         if "angel" in type:
@@ -53,16 +42,63 @@ def check_mail():
                 data = json.load(f)
                 master = email.utils.parseaddr(email_message["from"])
                 receiver = data[master[1]]
-        if 'master' in type:
+        elif 'master' in type:
             with open('master.json') as f:
                 data = json.load(f)
                 angel = email.utils.parseaddr(email_message["from"])
                 receiver = data[angel[1]]
+        else:
+            receiver = email.utils.parseaddr(email_message["from"])[1]
+            subject = "指令错误, command error"
+            my_message = '''输入有误，请第一行必须以英文写angel或master，或不使用reply而是发新的邮件，大小写无所谓但必须是英文。抱歉为了保证没有误传才有如此措施。
+            Keyword error, please include the keyword "angel" or "Master" in the first line, and try to compose a new email rather than reply, keyword is not case sensitive but must be in english. I beg my pardon as it was to ensure the email was sent to the right person.
+            先此致谢 Regards
+            '''
 
         #check exception
-        if receiver == None: pass
+        if receiver == None: 
+            print("error with: ")
+            print(email.utils.parseaddr(email_message["from"]))
+            continue
         
         #function to send email
-        send_email(my_message, email_message["subject"], receiver, text)
+        send_email(my_message, subject, receiver)
+
+#universal decoder to decode emails
+def get_decoded_email_body(message_body):
+    """ Decode email body.
+    Detect character set if the header is not set.
+    We try to get text/plain, but if there is not one then fallback to text/html.
+    :param message_body: Raw 7-bit message body input e.g. from imaplib. Double encoded in quoted-printable and latin-1
+    :return: Message body as unicode string
+    """
+
+    msg = email.message_from_bytes(message_body)
+
+    text = ""
+    if msg.is_multipart():
+        html = None
+        for part in msg.get_payload():
+
+            if part.get_content_charset() is None:
+                # We cannot know the character set, so return decoded "something"
+                text = part.get_payload(decode=True)
+                continue
+
+            charset = part.get_content_charset()
+
+            if part.get_content_type() == 'text/plain':
+                text = str(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
+
+            if part.get_content_type() == 'text/html':
+                html = str(part.get_payload(decode=True), str(charset), "ignore").encode('utf8', 'replace')
+
+        if text is not None:
+            return text.strip()
+        else:
+            return html.strip()
+    else:
+        text = str(msg.get_payload(decode=True), msg.get_content_charset(), 'ignore').encode('utf8', 'replace')
+        return text.strip()
 
 check_mail()
