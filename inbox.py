@@ -37,12 +37,12 @@ def check_mail():
         my_message = '\n'.join(my_message)
         
         #determine to send to master or angle
-        if "angel" in type:
+        if "angel" in type or "天使" in type:
             with open('angel.json') as f:
                 data = json.load(f)
                 master = email.utils.parseaddr(email_message["from"])
                 receiver = data[master[1]]
-        elif 'master' in type:
+        elif 'master' in type or "主人" in type:
             with open('master.json') as f:
                 data = json.load(f)
                 angel = email.utils.parseaddr(email_message["from"])

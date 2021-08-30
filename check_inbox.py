@@ -1,7 +1,6 @@
 import imaplib
 import email
 import json
-from send_email import send_email
 
 host = "imap.gmail.com"
 user = None
@@ -37,12 +36,14 @@ def check_mail():
         my_message = '\n'.join(my_message)
         
         #determine to send to master or angle
-        if "angel" in type:
+        if "angel" in type or "天使" in type:
+            print("angel\n")
             with open('angel.json') as f:
                 data = json.load(f)
                 master = email.utils.parseaddr(email_message["from"])
                 receiver = data[master[1]]
-        elif 'master' in type:
+        elif 'master' in type or "主人" in type:
+            print("master\n")
             with open('master.json') as f:
                 data = json.load(f)
                 angel = email.utils.parseaddr(email_message["from"])
@@ -55,11 +56,9 @@ def check_mail():
             先此致谢 Regards
             '''
 
-        #check exception
-        if receiver == None: 
-            print("error with: ")
-            print(email.utils.parseaddr(email_message["from"]))
-            continue
+        print("subject:\t" + subject + "\n")
+        print(my_message)
+        
         
         break
 
