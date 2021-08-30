@@ -59,6 +59,9 @@ def check_mail():
         if receiver == None: 
             print("error with: ")
             print(email.utils.parseaddr(email_message["from"]))
+            with open("error_log.txt", "a") as f:
+                f.write(email.utils.parseaddr(email_message["from"]))
+                print("\n")
             continue
         
         #function to send email
