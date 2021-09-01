@@ -79,9 +79,9 @@ def check_mail():
         #function to send email
         send_email(my_message, subject, receiver)
         if receiver_type == 1:
-            sender_email("已向您的天使发出邮件。\nYour letter had been sent to your angel", "确认发送信息 Confirmation email", sender_email)
+            sender_email("已向您的天使发出邮件。\nYour letter has been sent to your angel", "确认发送信息 Confirmation email", sender_email)
         elif receiver_type == 2:
-            sender_email("已向您的主人发出邮件。\nYour letter had been sent to your master", "确认发送信息 Confirmation email", sender_email)
+            sender_email("已向您的主人发出邮件。\nYour letter has been sent to your master", "确认发送信息 Confirmation email", sender_email)
 
 #universal decoder to decode emails
 def get_decoded_email_body(message_body):
