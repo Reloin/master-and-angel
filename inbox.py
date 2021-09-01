@@ -29,7 +29,11 @@ def check_mail():
         _, body = data[0]
         email_message = email.message_from_bytes(body)
         subject = email_message["subject"]
+        sender_email = email.utils.parseaddr(email_message["from"])[1]
         receiver = None
+        receiver_type = 0
+        
+        #read email content
         my_message = get_decoded_email_body(body)
         my_message = my_message.decode()
         
@@ -45,19 +49,19 @@ def check_mail():
         
         #determine to send to master or angle
         if "angel" in type or "天使" in type:
+            receiver_type = 1
             with open('angel.json') as f:
                 data = json.load(f)
-                master = email.utils.parseaddr(email_message["from"])
-                receiver = data[master[1]]
+                receiver = data[sender_email]
         elif 'master' in type or "主人" in type:
+            receiver_type = 2
             with open('master.json') as f:
                 data = json.load(f)
-                angel = email.utils.parseaddr(email_message["from"])
-                receiver = data[angel[1]]
+                receiver = data[sender_email]
         else:
-            receiver = email.utils.parseaddr(email_message["from"])[1]
+            receiver = sender_email
             subject = "指令错误, command error"
-            my_message = '''输入有误，请第一行必须以英文写angel或master，大小写无所谓。抱歉为了保证没有误传才有如此措施若您已照着指示书写，那可能是解读问题，非常抱歉我会尽快修复的。
+            my_message = '''输入有误，请第一行必须以英文写angel或master，大小写无所谓。抱歉为了保证没有误传才有如此措施。若您已照着指示书写，那可能是解读问题，非常抱歉我会尽快修复的。
             Keyword error, please include the keyword "angel" or "Master" in the first line, keyword is not case sensitive. I beg your pardon as it was to ensure the email was sent to the right person. 
             If you had followed the instructions written, then it probably has to do with decoding, I will fix it ASAP, sorry.
             先此致谢 Regards
@@ -74,6 +78,10 @@ def check_mail():
         
         #function to send email
         send_email(my_message, subject, receiver)
+        if receiver_type == 1:
+            sender_email("已向您的天使发出邮件。\nYour letter had been sent to your angel", "确认发送信息 Confirmation email", sender_email)
+        elif receiver_type == 2:
+            sender_email("已向您的主人发出邮件。\nYour letter had been sent to your master", "确认发送信息 Confirmation email", sender_email)
 
 #universal decoder to decode emails
 def get_decoded_email_body(message_body):
