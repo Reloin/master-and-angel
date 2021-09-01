@@ -57,10 +57,9 @@ def check_mail():
         else:
             receiver = email.utils.parseaddr(email_message["from"])[1]
             subject = "指令错误, command error"
-            my_message = '''输入有误，请第一行必须以英文写angel或master，或不使用reply而是发新的邮件，大小写无所谓但必须是英文。抱歉为了保证没有误传才有如此措施。
-            若您已照着指示书写，那可能是解读问题，非常抱歉我会尽快修复的。
-            Keyword error, please include the keyword "angel" or "Master" in the first line, and try to compose a new email rather than reply, keyword is not case sensitive but must be in english. I beg my pardon as it was to ensure the email was sent to the right person. 
-            If you had followed the instructions written, then it probably has to do with decoding, I will fix it asap, sorry.
+            my_message = '''输入有误，请第一行必须以英文写angel或master，大小写无所谓。抱歉为了保证没有误传才有如此措施若您已照着指示书写，那可能是解读问题，非常抱歉我会尽快修复的。
+            Keyword error, please include the keyword "angel" or "Master" in the first line, keyword is not case sensitive. I beg your pardon as it was to ensure the email was sent to the right person. 
+            If you had followed the instructions written, then it probably has to do with decoding, I will fix it ASAP, sorry.
             先此致谢 Regards
             '''
 
