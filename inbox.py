@@ -38,7 +38,7 @@ def check_mail():
             my_message = html2text.html2text(my_message)
         
         #determine if email is to angel or master
-        my_message = my_message.splitlines()
+        my_message = list(filter(None, my_message.splitlines()))
         type = my_message[0].lower()
         #restore message
         my_message = '\n'.join(my_message)
