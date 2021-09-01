@@ -1,6 +1,8 @@
 import imaplib
 import email
 import json
+from bs4 import BeautifulSoup
+import html2text
 from send_email import send_email
 
 host = "imap.gmail.com"
@@ -29,9 +31,14 @@ def check_mail():
         subject = email_message["subject"]
         receiver = None
         my_message = get_decoded_email_body(body)
-        my_message = my_message.decode().splitlines()
+        my_message = my_message.decode()
+        
+        #test if message is html
+        if bool(BeautifulSoup(my_message, "html.parser").find()):
+            my_message = html2text.html2text(my_message)
         
         #determine if email is to angel or master
+        my_message = my_message.splitlines()
         type = my_message[0].lower()
         #restore message
         my_message = '\n'.join(my_message)

@@ -1,6 +1,8 @@
 import imaplib
 import email
 import json
+from bs4 import BeautifulSoup
+import html2text
 
 host = "imap.gmail.com"
 user = None
@@ -28,9 +30,15 @@ def check_mail():
         subject = email_message["subject"]
         receiver = None
         my_message = get_decoded_email_body(body)
-        my_message = my_message.decode().splitlines()
+        my_message = my_message.decode()
+        
+        if bool(BeautifulSoup(my_message, "html.parser").find()):
+            my_message = html2text.html2text(my_message)
+            print("this is html")
         
         #determine if email is to angel or master
+        my_message = my_message.splitlines()
+        print(my_message)
         type = my_message[0].lower()
         #restore message
         my_message = '\n'.join(my_message)
@@ -48,16 +56,6 @@ def check_mail():
                 data = json.load(f)
                 angel = email.utils.parseaddr(email_message["from"])
                 receiver = data[angel[1]]
-        else:
-            receiver = email.utils.parseaddr(email_message["from"])[1]
-            subject = "指令错误, command error"
-            my_message = '''输入有误，请第一行必须以英文写angel或master，或不使用reply而是发新的邮件，大小写无所谓但必须是英文。抱歉为了保证没有误传才有如此措施。
-            Keyword error, please include the keyword "angel" or "Master" in the first line, and try to compose a new email rather than reply, keyword is not case sensitive but must be in english. I beg my pardon as it was to ensure the email was sent to the right person.
-            先此致谢 Regards
-            '''
-
-        print("subject:\t" + subject + "\n")
-        print(my_message)
         
         
         break
