@@ -79,10 +79,13 @@ If you had followed the instructions written, then it probably has to do with de
         
         #function to send email
         send_email(my_message, subject, receiver)
+        sub = "确认发送信息 Confirmation email"
         if receiver_type == 1:
-            sender_email("已向您的天使发出邮件。\nYour letter has been sent to your angel", "确认发送信息 Confirmation email", sender_email)
+            msg = "已经发邮件给您的天使啦，不用担心~\nYour letter has been sent to your angel"
+            sender_email(msg, sub, sender_email)
         elif receiver_type == 2:
-            sender_email("已向您的主人发出邮件。\nYour letter has been sent to your master", "确认发送信息 Confirmation email", sender_email)
+            msg = "已经发邮件给您的主人啦，不用担心~\nYour letter has been sent to your master"
+            sender_email(msg, sub, sender_email)
 
 #universal decoder to decode emails
 def get_decoded_email_body(message_body):
