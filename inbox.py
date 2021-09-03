@@ -31,7 +31,6 @@ def check_mail():
         subject = email_message["subject"]
         sender_email = email.utils.parseaddr(email_message["from"])[1]
         receiver = None
-        receiver_type = 0
         
         #read email content
         my_message = get_decoded_email_body(body)
@@ -49,12 +48,10 @@ def check_mail():
         
         #determine to send to master or angle
         if "angel" in type or "天使" in type:
-            receiver_type = 1
             with open('angel.json') as f:
                 data = json.load(f)
                 receiver = data[sender_email]
         elif 'master' in type or "主人" in type:
-            receiver_type = 2
             with open('master.json') as f:
                 data = json.load(f)
                 receiver = data[sender_email]
@@ -70,8 +67,7 @@ If you had followed the instructions written, then it probably has to do with de
 
         #check exception
         if receiver == None: 
-            print("error with: ")
-            print(email.utils.parseaddr(email_message["from"]))
+            print("error with: {}".format(sender_email))
             with open("error_log.txt", "a") as f:
                 f.write(email.utils.parseaddr(email_message["from"]))
                 print("\n")
@@ -79,13 +75,6 @@ If you had followed the instructions written, then it probably has to do with de
         
         #function to send email
         send_email(my_message, subject, receiver)
-        sub = "确认发送信息 Confirmation email"
-        if receiver_type == 1:
-            msg = "已经发邮件给您的天使啦，不用担心~\nYour letter has been sent to your angel"
-            sender_email(msg, sub, sender_email)
-        elif receiver_type == 2:
-            msg = "已经发邮件给您的主人啦，不用担心~\nYour letter has been sent to your master"
-            sender_email(msg, sub, sender_email)
 
 #universal decoder to decode emails
 def get_decoded_email_body(message_body):

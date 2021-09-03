@@ -30,7 +30,6 @@ def check_mail():
         subject = email_message["subject"]
         sender_email = email.utils.parseaddr(email_message["from"])[1]
         receiver = None
-        receiver_type = 0
         
         #read email content
         my_message = get_decoded_email_body(body)
@@ -48,12 +47,10 @@ def check_mail():
         
         #determine to send to master or angle
         if "angel" in type or "天使" in type:
-            receiver_type = 1
             with open('angel.json') as f:
                 data = json.load(f)
                 receiver = data[sender_email]
         elif 'master' in type or "主人" in type:
-            receiver_type = 2
             with open('master.json') as f:
                 data = json.load(f)
                 receiver = data[sender_email]
@@ -82,10 +79,6 @@ If you had followed the instructions written, then it probably has to do with de
         print(type)
         #print(my_message)
         
-        if receiver_type == 1:
-            print("sent to angel")
-        elif receiver_type == 2:
-            print("sent to master")
         break
 
 #universal decoder to decode emails
