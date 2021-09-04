@@ -28,7 +28,7 @@ def check_mail():
         _, body = data[0]
         email_message = email.message_from_bytes(body)
         subject = email_message["subject"]
-        sender_email = email.utils.parseaddr(email_message["from"])[1]
+        sender_email = email.utils.parseaddr(email_message["from"])
         receiver = None
         
         #read email content
@@ -45,17 +45,21 @@ def check_mail():
         #restore message
         my_message = '\n'.join(my_message)
         
+        #remove name and email from email
+        my_message = my_message.replace(sender_email[0], "")
+        my_message = my_message.replace(sender_email[1], "")
+        
         #determine to send to master or angle
         if "angel" in type or "天使" in type:
             with open('angel.json') as f:
                 data = json.load(f)
-                receiver = data[sender_email]
+                receiver = data[sender_email[1]]
         elif 'master' in type or "主人" in type:
             with open('master.json') as f:
                 data = json.load(f)
-                receiver = data[sender_email]
+                receiver = data[sender_email[1]]
         else:
-            receiver = sender_email
+            receiver = sender_email[1]
             subject = "指令错误, command error"
             my_message = '''读取为"{}"。
 输入有误，请第一行必须以英文写angel或master，大小写无所谓。抱歉为了保证没有误传才有如此措施。若您已照着指示书写，那可能是解读问题，非常抱歉我会尽快修复的。
@@ -73,11 +77,11 @@ If you had followed the instructions written, then it probably has to do with de
                 print("\n")
             continue
         
-        print("From:{}".format(sender_email))
+        print("From:{}".format(sender_email[1]))
         print("To:{}".format(receiver))
         print("Subject:{}".format(subject))
-        print(type)
-        #print(my_message)
+        #print(type)
+        print(my_message)
         
         break
 
