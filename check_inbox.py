@@ -36,12 +36,18 @@ def check_mail():
         my_message = my_message.decode()
         
         #test if message is html
-        if bool(BeautifulSoup(my_message, "html.parser").find()):
+        if bool(BeautifulSoup(my_message, "html.parser").find()) and sender_email[1] == "thaizhenleng123@gmail.com":
             my_message = html2text.html2text(my_message)
         
         #determine if email is to angel or master
-        my_message = list(filter(None, my_message.splitlines()))
+        #my_message = list(filter(None, my_message.splitlines()))
+        my_message = my_message.splitlines()
         type = my_message[0].lower()
+        
+        if ":" in type:
+            type = type[:type.find(":")]
+        if "：" in type:
+            type = type[:type.find("：")]
         #restore message
         my_message = '\n'.join(my_message)
         
@@ -80,8 +86,8 @@ If you had followed the instructions written, then it probably has to do with de
         print("From:{}".format(sender_email[1]))
         print("To:{}".format(receiver))
         print("Subject:{}".format(subject))
-        #print(type)
-        print(my_message)
+        print(type)
+        #print(my_message)
         
         break
 
